@@ -3,6 +3,7 @@ const app = express()
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient;
+const { ObjectId } = require('mongodb');
 require('dotenv').config();
 const port = 3000
 
@@ -58,7 +59,6 @@ client.connect(err => {
   })
 
 
-
   app.get('/getBookings', (req, res) => {
     bookingCollection.find({})
     .toArray((err, docs)=>{
@@ -76,11 +76,20 @@ client.connect(err => {
       })
   })
 
+  app.patch('/update-booking-status', (req, res) => {
+    bookingCollection.updateOne(
+      { _id: ObjectId(req.body.id) },
+      { $set: { 'status': req.body.status } }
+    )
+      .then(result => {
+        res.send(result.modifiedCount > 0)
+      })
+      .catch(err => console.log(err))
+  })
+
 
   
 });
-
-
 
 
 app.get('/', (req, res) => {
