@@ -68,6 +68,13 @@ client.connect(err => {
   })
 
 
+  app.get('/getUserBookingList', (req, res)=>{
+      const email = req.body.email;
+      bookingCollection.find({email: email})
+      .toArray((err,docs)=>{
+          res.status(200).send(docs);
+      })
+  })
 
 
   
