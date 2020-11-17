@@ -3,6 +3,7 @@ const app = express()
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient;
+require('dotenv').config();
 const port = 3000
 
 
@@ -16,8 +17,8 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 const client = new MongoClient(uri, { useNewUrlParser: true , useUnifiedTopology: true });
 
 client.connect(err => {
-  const apartmentCollection = client.db(process.env.DB_NAME).collection("apartment");
-  const bookingCollection = client.db(process.env.DB_NAME).collection("booking");
+  const apartmentCollection = client.db("Apartment-Hunt").collection("apartment");
+  const bookingCollection = client.db("Apartment-Hunt").collection("booking");
   // perform actions on the collection object
 
   app.post('/addApartment', (req, res) => {
@@ -39,9 +40,10 @@ client.connect(err => {
     return res.send({name: file.name, path: `/${file.name}`})
   })
 
-  app.get('getApartments', (req, res) => {
+  app.get('/getApartments', (req, res) => {
     apartmentCollection.find({})
     .toArray((err, docs)=>{
+        console.log(err)
       res.status(200).send(docs);
     })
   })
@@ -57,8 +59,18 @@ client.connect(err => {
 
 
 
+  app.get('/getBookings', (req, res) => {
+    bookingCollection.find({})
+    .toArray((err, docs)=>{
+        console.log(err)
+      res.status(200).send(docs);
+    })
+  })
+
+
+
+
   
-  client.close();
 });
 
 
@@ -68,6 +80,6 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
-app.listen(process.env.PORT || port, () => {
+app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
